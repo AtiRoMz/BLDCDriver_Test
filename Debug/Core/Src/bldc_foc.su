@@ -1,0 +1,3 @@
+bldc_foc.c:22:6:BLDCStartCurrentSense	8	static
+bldc_foc.c:43:6:BLDCEnable	8	static
+bldc_foc.c:58:6:BLDCDisable	8	static

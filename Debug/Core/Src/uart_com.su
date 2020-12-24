@@ -1,0 +1,6 @@
+uart_com.c:15:6:uart_com_init	16	static
+uart_com.c:31:13:uart_com_putc	32	static
+uart_com.c:43:6:uart_com_send	16	static
+uart_com.c:57:6:uart_com_send_it	32	static
+uart_com.c:71:6:uart_com_proc	16	static
+uart_com.c:136:6:uart_com_timer	8	static

@@ -1,0 +1,2 @@
+bldc_calib.c:13:6:BLDCCalibZeroPos	40	static
+bldc_calib.c:30:6:BLDC120DegConduction	16	static

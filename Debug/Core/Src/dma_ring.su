@@ -1,0 +1,10 @@
+dma_ring.c:5:6:dma_ring_init	16	static
+dma_ring.c:12:5:dma_ring_getc	24	static
+dma_ring.c:22:5:dma_ring_putc	24	static
+dma_ring.c:35:5:dma_ring_available	16	static
+dma_ring.c:42:5:dma_ring_available_linear	16	static
+dma_ring.c:50:10:dma_ring_get_w_ptr	16	static
+dma_ring.c:54:10:dma_ring_get_r_ptr	16	static
+dma_ring.c:58:6:dma_ring_forward_r_ptr	16	static
+dma_ring.c:69:6:dma_ring_set_w_ptr	16	static
+dma_ring.c:72:6:dma_ring_debug	16	static

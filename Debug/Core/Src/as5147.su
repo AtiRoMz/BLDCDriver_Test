@@ -1,0 +1,5 @@
+as5147.c:17:7:AS5147GetAngle	24	static
+as5147.c:28:10:AS5147Read	32	static
+as5147.c:42:13:AS5147Select	8	static
+as5147.c:51:13:AS5147Deselect	8	static
+as5147.c:60:17:AS5147AddParityBit	24	static

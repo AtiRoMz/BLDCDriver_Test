@@ -1,0 +1,5 @@
+drv8305.c:19:6:DRV8305Init	8	static
+drv8305.c:29:10:DRV8305Write	32	static
+drv8305.c:44:10:DRV8305Read	32	static
+drv8305.c:58:13:DRV8305Select	8	static
+drv8305.c:67:13:DRV8305Deselect	8	static

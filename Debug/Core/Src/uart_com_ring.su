@@ -1,0 +1,11 @@
+uart_com_ring.c:4:13:update_w_ptr	16	static
+uart_com_ring.c:11:6:uart_com_ring_init	24	static
+uart_com_ring.c:20:5:uart_com_ring_getc	24	static
+uart_com_ring.c:32:5:uart_com_ring_putc	24	static
+uart_com_ring.c:48:5:uart_com_ring_available	16	static
+uart_com_ring.c:58:5:uart_com_ring_available_linear	16	static
+uart_com_ring.c:68:10:uart_com_ring_get_w_ptr	16	static
+uart_com_ring.c:74:10:uart_com_ring_get_r_ptr	16	static
+uart_com_ring.c:80:6:uart_com_ring_forward_r_ptr	16	static
+uart_com_ring.c:93:6:uart_com_ring_set_w_ptr	16	static
+uart_com_ring.c:97:6:uart_com_ring_debug	16	static
