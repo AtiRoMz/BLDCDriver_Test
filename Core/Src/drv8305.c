@@ -17,7 +17,8 @@ static void DRV8305Deselect(void);
  * @return
  */
 void DRV8305Init(void) {
-	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0256);	//6 PWM mode -> 3 PWM mode
+	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0296);	//6 PWM mode -> 3 PWM mode
+	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x002C);	//Current Amp : x10 -> x40
 }
 
 /*

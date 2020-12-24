@@ -31,7 +31,7 @@ Core/Src/bldc_foc.o: ../Core/Src/bldc_foc.c ../Core/Inc/bldc_foc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/uart_com.h ../Core/Inc/tim.h ../Core/Inc/spi.h \
- ../Core/Inc/adc.h
+ ../Core/Inc/adc.h ../Core/Inc/as5147.h
 
 ../Core/Inc/bldc_foc.h:
 
@@ -106,3 +106,5 @@ Core/Src/bldc_foc.o: ../Core/Src/bldc_foc.c ../Core/Inc/bldc_foc.h \
 ../Core/Inc/spi.h:
 
 ../Core/Inc/adc.h:
+
+../Core/Inc/as5147.h:

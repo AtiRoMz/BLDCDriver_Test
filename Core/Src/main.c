@@ -75,6 +75,11 @@ void SystemClock_Config(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
+
+		BLDCVqConstControl(0, 1.5f);
+
+		/*
+		//sensored 120 deg conduction
 		static float pwm_duty = 0.25;
 		static uint16_t angle_data;
 		static float elec_angle_deg;
@@ -98,9 +103,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
 		}
+		*/
 
 		if (t > 5000) {
-			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			t = 0;
 		} else {
 			t++;
@@ -175,18 +181,18 @@ int main(void)
 
   //Enable BLDC
   DRV8305Init();
-//  BLDCEnable();
+  BLDCEnable();
 
-//  while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
+  while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
 //  BLDCCalibZeroPos();
 
-  BLDCStartCurrentSense();
+//  BLDCStartCurrentSense();
 
   //start timer interrupt
-//  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim6);
 
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 250);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+//  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 250);
+//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -196,6 +202,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
 	  //LED
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 	  HAL_Delay(500);

@@ -14,6 +14,7 @@
 #include "adc.h"
 
 //prototype declaration
+void BLDCVqConstControl(float, float);
 void BLDCStartCurrentSense(void);
 void BLDCEnable(void);
 void BLDCDisable(void);
