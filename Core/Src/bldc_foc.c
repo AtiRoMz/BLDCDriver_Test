@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 int32_t idx = 0;
-float g_curt[3000];
+float g_curt[1000][6];
 
 //private define
 #define ADC_CURT_SENSE_BUFFER_SIZE	((uint32_t)3)
@@ -25,9 +25,11 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	float curt_alpha, curt_beta; 	//I_alpha, I_beta current[A]
     float curt_d, curt_q;			//Id, Iq current[A]
 
-    static volatile float vol_u, vol_v, vol_w, vol_max;
-    static volatile float vol_alpha, vol_beta;
-    const float pwm_max = __HAL_TIM_GET_AUTORELOAD(&htim8);
+    static volatile float vol_u, vol_v, vol_w;
+    volatile float vol_alpha, vol_beta;
+    const float pwm_max  	= __HAL_TIM_GET_AUTORELOAD(&htim8);
+    const float pwm_half 	= __HAL_TIM_GET_AUTORELOAD(&htim8) / 2.0f;
+    const float pwm_per_vol = __HAL_TIM_GET_AUTORELOAD(&htim8) / 18.0f;		//TODO:18.0 -> measured voltage
 
     float theta, sinth, costh;
 	uint16_t theta_data;
@@ -38,18 +40,12 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	costh = cosf(theta);
 
 	//current control
-	curt_u = (1.65f - ((float)curt_sense_data[0] - curt_sense_data_offset[0]) * 3.3f / 4096.0f) * 12.5f;
-	curt_v = (1.65f - ((float)curt_sense_data[1] - curt_sense_data_offset[1]) * 3.3f / 4096.0f) * 12.5f;
-	curt_w = (1.65f - ((float)curt_sense_data[2] - curt_sense_data_offset[2]) * 3.3f / 4096.0f) * 12.5f;
-	/*
+	curt_u = ((int)curt_sense_data[0] - (int)curt_sense_data_offset[0]) * 3.3f / 4096.0f * 25.0f;	//TODO:use amplifier gain
+	curt_v = ((int)curt_sense_data[1] - (int)curt_sense_data_offset[1]) * 3.3f / 4096.0f * 25.0f;
+	curt_w = ((int)curt_sense_data[2] - (int)curt_sense_data_offset[2]) * 3.3f / 4096.0f * 25.0f;
 	if 		(vol_u >= vol_v && vol_u >= vol_w) {curt_u = -curt_v - curt_w;}
 	else if (vol_v >= vol_w && vol_v >= vol_u) {curt_v = -curt_w - curt_u;}
 	else if (vol_w >= vol_u && vol_w >= vol_v) {curt_w = -curt_u - curt_v;}
-	*/
-	if (idx < 3000) {
-		g_curt[idx] = curt_u + curt_v + curt_w;
-		idx++;
-	}
 
 	//current UVW -> alpha,beta
 	curt_alpha = 0.8169496580928f * (curt_u - 0.5 * (curt_v + curt_w));
@@ -58,6 +54,7 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	//current alpha,beta -> dq
 	curt_d =  curt_alpha * costh + curt_beta * sinth;
 	curt_q = -curt_alpha * sinth + curt_beta * costh;
+
 
 	//Vd,Vq control
 	//dq -> alpha,beta
@@ -69,11 +66,19 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
     vol_v = -0.40824829f * vol_alpha + 0.707106781 * vol_beta;
     vol_w = -0.40824829f * vol_alpha - 0.707106781 * vol_beta;
 
-    vol_u = fmaxf(fminf(pwm_max / 2.0f + vol_u * pwm_max / 12.0f, pwm_max), 0);
-    vol_v = fmaxf(fminf(pwm_max / 2.0f + vol_v * pwm_max / 12.0f, pwm_max), 0);
-    vol_w = fmaxf(fminf(pwm_max / 2.0f + vol_w * pwm_max / 12.0f, pwm_max), 0);
+	if (idx < 1000) {
+		g_curt[idx][0] = vol_u;
+		g_curt[idx][1] = vol_v;
+		g_curt[idx][2] = vol_w;
+		g_curt[idx][3] = curt_u;
+		g_curt[idx][4] = curt_v;
+		g_curt[idx][5] = curt_w;
+		idx++;
+	}
 
-//    printf("%f %f %f %f\n", theta, vol_u, vol_v, vol_w);
+    vol_u = fmaxf(fminf(pwm_half + vol_u * pwm_per_vol, pwm_max), 0);
+    vol_v = fmaxf(fminf(pwm_half + vol_v * pwm_per_vol, pwm_max), 0);
+    vol_w = fmaxf(fminf(pwm_half + vol_w * pwm_per_vol, pwm_max), 0);
 
     //output PWM
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (uint16_t)vol_u);
@@ -114,9 +119,11 @@ void BLDCStartCurrentSense(void) {
  * @return
  * @note	for debugging
  */
+/*
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-//	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
+	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
 }
+*/
 
 /*
  * Enable BLDC Motor(Enable Gate Driver & Start TIM8 PWM Generation)

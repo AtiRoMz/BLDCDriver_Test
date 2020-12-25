@@ -14,7 +14,7 @@
 #include "adc.h"
 
 extern int32_t idx;
-extern float g_curt[3000];
+extern float g_curt[1000][6];
 
 //prototype declaration
 void BLDCVqConstControl(float, float);
