@@ -18,7 +18,7 @@ float g_curt[3000];
 
 //static variables
 static uint16_t curt_sense_data[ADC_CURT_SENSE_BUFFER_SIZE] = {};
-static float curt_sense_data_offset[ADC_CURT_SENSE_BUFFER_SIZE] = {};
+static uint32_t curt_sense_data_offset[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 
 void BLDCVqConstControl(float vol_d, float vol_q) {
 	float curt_u, curt_v, curt_w;	//Iu, Iv, Iw current[A]
@@ -82,22 +82,19 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 }
 
 void BLDCGetCurrentSenseOffset(void) {
-	const int32_t num_offset = 10000;
-
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, __HAL_TIM_GET_AUTORELOAD(&htim8) - 1);
-	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
-	HAL_Delay(10);
+	const int32_t num_offset = 10;
 
  	curt_sense_data_offset[0] = curt_sense_data_offset[1] = curt_sense_data_offset[2] = 0;
  	for (int32_t i = 0; i < num_offset; i++) {
  		curt_sense_data_offset[0] += curt_sense_data[0];
  		curt_sense_data_offset[1] += curt_sense_data[1];
  		curt_sense_data_offset[2] += curt_sense_data[2];
+ 		HAL_Delay(1);
  	}
- 	curt_sense_data_offset[0] /= num_offset;
- 	curt_sense_data_offset[1] /= num_offset;
- 	curt_sense_data_offset[2] /= num_offset;
- 	printf("%f %f %f\n", curt_sense_data_offset[0], curt_sense_data_offset[1], curt_sense_data_offset[2]);
+ 	curt_sense_data_offset[0] = (int)(curt_sense_data_offset[0] / num_offset + 0.50f);	//ROUND(curt_sense_data_offset / num_offset)
+ 	curt_sense_data_offset[1] = (int)(curt_sense_data_offset[1] / num_offset + 0.50f);
+ 	curt_sense_data_offset[2] = (int)(curt_sense_data_offset[2] / num_offset + 0.50f);
+ 	printf("%d %d %d\n", (int)curt_sense_data_offset[0], (int)curt_sense_data_offset[1], (int)curt_sense_data_offset[2]);
 }
 
 /*
@@ -117,11 +114,9 @@ void BLDCStartCurrentSense(void) {
  * @return
  * @note	for debugging
  */
-/*
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
+//	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
 }
-*/
 
 /*
  * Enable BLDC Motor(Enable Gate Driver & Start TIM8 PWM Generation)

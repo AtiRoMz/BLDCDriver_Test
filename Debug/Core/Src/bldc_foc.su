@@ -1,5 +1,6 @@
 bldc_foc.c:23:6:BLDCVqConstControl	72	static
-bldc_foc.c:84:6:BLDCGetCurrentSenseOffset	48	static
-bldc_foc.c:110:6:BLDCStartCurrentSense	8	static
-bldc_foc.c:131:6:BLDCEnable	8	static
-bldc_foc.c:148:6:BLDCDisable	8	static
+bldc_foc.c:84:6:BLDCGetCurrentSenseOffset	16	static
+bldc_foc.c:107:6:BLDCStartCurrentSense	8	static
+bldc_foc.c:117:6:HAL_ADC_ConvCpltCallback	16	static
+bldc_foc.c:126:6:BLDCEnable	8	static
+bldc_foc.c:143:6:BLDCDisable	8	static

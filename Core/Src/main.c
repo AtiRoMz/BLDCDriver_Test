@@ -182,9 +182,9 @@ int main(void)
   //current sense
   BLDCStartCurrentSense();
 
-  //Enable BLDC
+  //Enable BLDC and initialize gate-driver
+  BLDCEnable();		//must be run before DRV8305Init()
   DRV8305Init();
-  BLDCEnable();
 
   while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
 //  BLDCCalibZeroPos();
@@ -195,6 +195,7 @@ int main(void)
 
 //  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 250);
 //  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -212,7 +213,7 @@ int main(void)
 		  idx = 3001;
 	  }
 	  //LED
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+//	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 	  HAL_Delay(500);
   }
   /* USER CODE END 3 */
