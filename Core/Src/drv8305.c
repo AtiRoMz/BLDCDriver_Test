@@ -6,6 +6,7 @@
  */
 
 #include "drv8305.h"
+#include "bldc_foc.h"
 
 //private function declaration
 static void DRV8305Select(void);
@@ -18,7 +19,9 @@ static void DRV8305Deselect(void);
  */
 void DRV8305Init(void) {
 	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0296);	//6 PWM mode -> 3 PWM mode
-	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x002C);	//Current Amp : x10 -> x40
+	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x072A);	//Current Amp : x10 -> x40, current sense calibration on
+	BLDCGetCurrentSenseOffset();						//get current sense offset(calibration)
+	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x002A);	//Current Amp : x10 -> x40, current sense calibration off
 }
 
 /*

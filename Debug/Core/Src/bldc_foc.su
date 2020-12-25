@@ -1,4 +1,5 @@
-bldc_foc.c:19:6:BLDCVqConstControl	64	static
-bldc_foc.c:68:6:BLDCStartCurrentSense	8	static
-bldc_foc.c:89:6:BLDCEnable	8	static
-bldc_foc.c:104:6:BLDCDisable	8	static
+bldc_foc.c:23:6:BLDCVqConstControl	72	static
+bldc_foc.c:84:6:BLDCGetCurrentSenseOffset	48	static
+bldc_foc.c:110:6:BLDCStartCurrentSense	8	static
+bldc_foc.c:131:6:BLDCEnable	8	static
+bldc_foc.c:148:6:BLDCDisable	8	static

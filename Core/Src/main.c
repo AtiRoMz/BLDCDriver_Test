@@ -76,7 +76,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
 
-		BLDCVqConstControl(0, 1.5f);
+		BLDCVqConstControl(0, 2.0f);
 
 		/*
 		//sensored 120 deg conduction
@@ -105,7 +105,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		}
 		*/
 
-		if (t > 5000) {
+		if (t >= 5000) {
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			t = 0;
 		} else {
@@ -179,6 +179,9 @@ int main(void)
   AS5147Read(AS5147_ANGLECOM);
   DRV8305Read(DRV8305_WARNING_WATCHDOG_RESET);
 
+  //current sense
+  BLDCStartCurrentSense();
+
   //Enable BLDC
   DRV8305Init();
   BLDCEnable();
@@ -186,7 +189,6 @@ int main(void)
   while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
 //  BLDCCalibZeroPos();
 
-//  BLDCStartCurrentSense();
 
   //start timer interrupt
   HAL_TIM_Base_Start_IT(&htim6);
@@ -202,7 +204,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
+	  if (idx == 3000) {
+		  for (int32_t i = 0; i < 3000; i++) {
+			  printf("%f\n", g_curt[i]);
+			  HAL_Delay(1);
+		  }
+		  idx = 3001;
+	  }
 	  //LED
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 	  HAL_Delay(500);

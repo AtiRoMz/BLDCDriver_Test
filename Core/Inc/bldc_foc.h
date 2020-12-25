@@ -13,8 +13,12 @@
 #include "spi.h"
 #include "adc.h"
 
+extern int32_t idx;
+extern float g_curt[3000];
+
 //prototype declaration
 void BLDCVqConstControl(float, float);
+void BLDCGetCurrentSenseOffset(void);
 void BLDCStartCurrentSense(void);
 void BLDCEnable(void);
 void BLDCDisable(void);

@@ -30,7 +30,8 @@ Core/Src/drv8305.o: ../Core/Src/drv8305.c ../Core/Inc/drv8305.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/uart_com.h ../Core/Inc/spi.h
+ ../Core/Inc/uart_com.h ../Core/Inc/spi.h ../Core/Inc/bldc_foc.h \
+ ../Core/Inc/tim.h ../Core/Inc/adc.h
 
 ../Core/Inc/drv8305.h:
 
@@ -101,3 +102,9 @@ Core/Src/drv8305.o: ../Core/Src/drv8305.c ../Core/Inc/drv8305.h \
 ../Core/Inc/uart_com.h:
 
 ../Core/Inc/spi.h:
+
+../Core/Inc/bldc_foc.h:
+
+../Core/Inc/tim.h:
+
+../Core/Inc/adc.h:

@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_12
+ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_10
 ADC1.Channel-8\#ChannelRegularConversion=ADC_CHANNEL_11
-ADC1.Channel-9\#ChannelRegularConversion=ADC_CHANNEL_10
+ADC1.Channel-9\#ChannelRegularConversion=ADC_CHANNEL_12
 ADC1.ContinuousConvMode=DISABLE
 ADC1.DMAContinuousRequests=ENABLE
 ADC1.DiscontinuousConvMode=DISABLE
@@ -340,7 +340,7 @@ TIM8.CounterMode=TIM_COUNTERMODE_CENTERALIGNED1
 TIM8.IPParameters=Channel-PWM Generation1 CH1,Channel-PWM Generation2 CH2,Channel-PWM Generation3 CH3,Prescaler,Period,CounterMode,Channel-PWM Generation4 No Output,Pulse-PWM Generation4 No Output,TIM_MasterOutputTrigger
 TIM8.Period=1250-1
 TIM8.Prescaler=0
-TIM8.Pulse-PWM\ Generation4\ No\ Output=1248
+TIM8.Pulse-PWM\ Generation4\ No\ Output=0
 TIM8.TIM_MasterOutputTrigger=TIM_TRGO_OC4REF
 USART1.IPParameters=VirtualMode
 USART1.VirtualMode=VM_ASYNC
