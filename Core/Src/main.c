@@ -183,17 +183,17 @@ int main(void)
 
   //Enable BLDC and initialize gate-driver
   BLDCEnable();		//must be run before DRV8305Init()
+  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   DRV8305Init();
 
   while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
 //  BLDCCalibZeroPos();
 
   //start timer interrupt
-  HAL_TIM_Base_Start_IT(&htim6);
+//  HAL_TIM_Base_Start_IT(&htim6);
 
-//  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
-//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -203,16 +203,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (idx == 1000) {
-		  for (int32_t i = 0; i < 1000; i++) {
-			  printf("%f %f %f %f %f %f\n", g_curt[i][0], g_curt[i][1], g_curt[i][2], g_curt[i][3], g_curt[i][4], g_curt[i][5]);
-			  HAL_Delay(5);
-		  }
-		  idx = 1001;
-	  }
+		BLDC120DegConduction(BLDC_UtoV, 0.07f);
 	  //LED
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
-	  HAL_Delay(500);
+		HAL_Delay(300);
   }
   /* USER CODE END 3 */
 }

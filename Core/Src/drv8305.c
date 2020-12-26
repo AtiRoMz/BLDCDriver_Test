@@ -18,9 +18,13 @@ static void DRV8305Deselect(void);
  * @return
  */
 void DRV8305Init(void) {
+	/*
 	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0296);	//6 PWM mode -> 3 PWM mode
 	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x0715);	//Current Amp : x10 -> x20, current sense calibration on
 	BLDCGetCurrentSenseOffset();						//get current sense offset(calibration)
+	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x0015);	//Current Amp : x10 -> x20, current sense calibration off
+	*/
+	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0216);	//6 PWM mode
 	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x0015);	//Current Amp : x10 -> x20, current sense calibration off
 }
 

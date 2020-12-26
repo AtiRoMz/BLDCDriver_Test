@@ -121,11 +121,9 @@ void BLDCStartCurrentSense(void) {
  * @return
  * @note	for debugging
  */
-/*
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
 }
-*/
 
 /*
  * Enable BLDC Motor(Enable Gate Driver & Start TIM8 PWM Generation)
