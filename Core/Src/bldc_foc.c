@@ -43,9 +43,11 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	curt_u = ((int)curt_sense_data[0] - (int)curt_sense_data_offset[0]) * 3.3f / 4096.0f * 25.0f;	//TODO:use amplifier gain
 	curt_v = ((int)curt_sense_data[1] - (int)curt_sense_data_offset[1]) * 3.3f / 4096.0f * 25.0f;
 	curt_w = ((int)curt_sense_data[2] - (int)curt_sense_data_offset[2]) * 3.3f / 4096.0f * 25.0f;
+	/*
 	if 		(vol_u >= vol_v && vol_u >= vol_w) {curt_u = -curt_v - curt_w;}
 	else if (vol_v >= vol_w && vol_v >= vol_u) {curt_v = -curt_w - curt_u;}
 	else if (vol_w >= vol_u && vol_w >= vol_v) {curt_w = -curt_u - curt_v;}
+	*/
 
 	//current UVW -> alpha,beta
 	curt_alpha = 0.8169496580928f * (curt_u - 0.5 * (curt_v + curt_w));
