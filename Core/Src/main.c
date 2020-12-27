@@ -75,8 +75,9 @@ void SystemClock_Config(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
+		static int16_t adc_data;
 
-		BLDCVqConstControl(0, 5.0f);
+//		BLDCVqConstControl(0, 5.0f);
 
 		/*
 		//sensored 120 deg conduction
@@ -105,7 +106,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		}
 		*/
 
-		if (t >= 5000) {
+		if (t >= 100) {
+			HAL_ADC_Start(&hadc1);
+			HAL_ADC_PollForConversion(&hadc1, 10);
+			adc_data = HAL_ADC_GetValue(&hadc1);
+			printf("%d\n", (int)adc_data);
+
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			t = 0;
 		} else {
@@ -183,16 +189,13 @@ int main(void)
 
   //Enable BLDC and initialize gate-driver
   BLDCEnable();		//must be run before DRV8305Init()
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   DRV8305Init();
 
   while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET);
 //  BLDCCalibZeroPos();
 
   //start timer interrupt
-//  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim6);
 
   /* USER CODE END 2 */
 
@@ -203,10 +206,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		BLDC120DegConduction(BLDC_UtoV, 0.07f);
+	BLDC120DegConduction(BLDC_UtoV, 0.06f);
+	HAL_Delay(500);
+	BLDCFree();
+	HAL_Delay(500);
 	  //LED
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
-		HAL_Delay(300);
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
   }
   /* USER CODE END 3 */
 }

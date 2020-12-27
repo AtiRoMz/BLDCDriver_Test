@@ -79,3 +79,12 @@ void BLDC120DegConduction(bldc_conduction_phase phase, float pwm_duty) {
 		break;
 	}
 }
+
+void BLDCFree(void) {
+	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 0);
+	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 0);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+}

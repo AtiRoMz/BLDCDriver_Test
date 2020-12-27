@@ -17,12 +17,12 @@ typedef enum {
 	BLDC_VtoW,
 	BLDC_VtoU,
 	BLDC_WtoU,
-	BLDC_WtoV
+	BLDC_WtoV,
 } bldc_conduction_phase;
 
 //prototype declaration
 void BLDCCalibZeroPos(void);
 void BLDC120DegConduction(bldc_conduction_phase, float);
-
+void BLDCFree(void);
 
 #endif /* INC_BLDC_CALIB_H_ */
