@@ -25,7 +25,7 @@ void DRV8305Init(void) {
 	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x0015);	//Current Amp : x10 -> x20, current sense calibration off
 	*/
 	DRV8305Write(DRV8305_GATE_DRIVER_CONTROL, 0x0216);	//6 PWM mode
-	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x0015);	//Current Amp : x10 -> x20, current sense calibration off
+	DRV8305Write(DRV8305_SHUNT_AMP_CONTROL, 0x002A);	//Current Amp : x10 -> x20, current sense calibration off
 }
 
 /*

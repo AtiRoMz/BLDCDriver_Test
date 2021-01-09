@@ -75,7 +75,7 @@ void SystemClock_Config(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
-		static int16_t adc_data;
+		static int16_t adc_data1, adc_data2;
 
 //		BLDCVqConstControl(0, 5.0f);
 
@@ -109,8 +109,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		if (t >= 100) {
 			HAL_ADC_Start(&hadc1);
 			HAL_ADC_PollForConversion(&hadc1, 10);
-			adc_data = HAL_ADC_GetValue(&hadc1);
-			printf("%d\n", (int)adc_data);
+			adc_data1 = HAL_ADC_GetValue(&hadc1);
+
+			HAL_ADC_Start(&hadc2);
+			HAL_ADC_PollForConversion(&hadc2, 10);
+			adc_data2 = HAL_ADC_GetValue(&hadc2);
+			float vbatt = adc_data2 * 3.3f / 4096 * (36.3f / 3.3f);
+
+//			printf("%f %f\n", (float)(adc_data1 - 2048) * 3.3f * 50.0f / 4096.0f, vbatt);
+			printf("%d\n", (int)adc_data1);
 
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
 			t = 0;
@@ -169,6 +176,7 @@ int main(void)
   MX_TIM6_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   //wait after power on
   HAL_Delay(10);
@@ -206,10 +214,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	BLDC120DegConduction(BLDC_UtoV, 0.06f);
-	HAL_Delay(500);
-	BLDCFree();
-	HAL_Delay(500);
+	BLDC120DegConduction(BLDC_UtoV, 0.10f);
+	HAL_Delay(2000);
+	BLDC120DegConduction(BLDC_UtoV, 0.01f);
+	HAL_Delay(2000);
 	  //LED
 	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
   }
