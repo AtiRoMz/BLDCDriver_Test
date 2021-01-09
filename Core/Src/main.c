@@ -76,7 +76,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
 
-		BLDCVqConstControl(0, 5.0f);
+		BLDCVqConstControl(0, 3.0f);
 
 		/*
 		//sensored 120 deg conduction
@@ -101,7 +101,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
 		}
 		*/
 
@@ -203,12 +202,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (idx == 1000) {
+	  if (idx == 6000) {
 		  for (int32_t i = 0; i < 1000; i++) {
 			  printf("%f %f %f %f %f %f\n", g_curt[i][0], g_curt[i][1], g_curt[i][2], g_curt[i][3], g_curt[i][4], g_curt[i][5]);
 			  HAL_Delay(5);
 		  }
-		  idx = 1001;
+		  idx = 6001;
 	  }
 	  //LED
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);

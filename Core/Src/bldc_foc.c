@@ -15,9 +15,12 @@ float g_curt[1000][6];
 
 //private define
 #define ADC_CURT_SENSE_BUFFER_SIZE	((uint32_t)3)
+#define ADC_MOV_AVE_SIZE			5
 
 //static variables
 static uint16_t curt_sense_data[ADC_CURT_SENSE_BUFFER_SIZE] = {};
+static uint16_t curt_sense_data_log[ADC_CURT_SENSE_BUFFER_SIZE][ADC_MOV_AVE_SIZE] = {};
+static uint32_t curt_sense_data_ave[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 static uint32_t curt_sense_data_offset[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 
 void BLDCVqConstControl(float vol_d, float vol_q) {
@@ -39,10 +42,18 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	sinth = sinf(theta);
 	costh = cosf(theta);
 
+	for (int8_t i = 0; i < ADC_CURT_SENSE_BUFFER_SIZE; i++) {
+		curt_sense_data_ave[i] = 0;
+		for (int16_t j = 0; j < ADC_MOV_AVE_SIZE; j++) {
+			curt_sense_data_ave[i] += curt_sense_data_log[i][j];
+		}
+		curt_sense_data_ave[i] /= ADC_MOV_AVE_SIZE;
+	}
+
 	//current control
-	curt_u = ((int)curt_sense_data[0] - (int)curt_sense_data_offset[0]) * 3.3f / 4096.0f * 25.0f;	//TODO:use amplifier gain
-	curt_v = ((int)curt_sense_data[1] - (int)curt_sense_data_offset[1]) * 3.3f / 4096.0f * 25.0f;
-	curt_w = ((int)curt_sense_data[2] - (int)curt_sense_data_offset[2]) * 3.3f / 4096.0f * 25.0f;
+	curt_u = ((int)curt_sense_data_ave[0] - (int)curt_sense_data_offset[0]) * 3.3f / 4096.0f * 25.0f;	//TODO:use amplifier gain
+	curt_v = ((int)curt_sense_data_ave[1] - (int)curt_sense_data_offset[1]) * 3.3f / 4096.0f * 25.0f;
+	curt_w = ((int)curt_sense_data_ave[2] - (int)curt_sense_data_offset[2]) * 3.3f / 4096.0f * 25.0f;
 	/*
 	if 		(vol_u >= vol_v && vol_u >= vol_w) {curt_u = -curt_v - curt_w;}
 	else if (vol_v >= vol_w && vol_v >= vol_u) {curt_v = -curt_w - curt_u;}
@@ -68,13 +79,15 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
     vol_v = -0.40824829f * vol_alpha + 0.707106781 * vol_beta;
     vol_w = -0.40824829f * vol_alpha - 0.707106781 * vol_beta;
 
-	if (idx < 1000) {
-		g_curt[idx][0] = vol_u;
-		g_curt[idx][1] = vol_v;
-		g_curt[idx][2] = vol_w;
-		g_curt[idx][3] = curt_u;
-		g_curt[idx][4] = curt_v;
-		g_curt[idx][5] = curt_w;
+	if (5000 <= idx && idx < 6000) {
+		g_curt[idx - 5000][0] = vol_u;
+		g_curt[idx - 5000][1] = vol_v;
+		g_curt[idx - 5000][2] = vol_w;
+		g_curt[idx - 5000][3] = curt_u;
+		g_curt[idx - 5000][4] = curt_v;
+		g_curt[idx - 5000][5] = curt_w;
+		idx++;
+	} else if (idx < 5000) {
 		idx++;
 	}
 
@@ -88,15 +101,31 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (uint16_t)vol_w);
 }
 
+/*
+ * ADC Conversion Complete Callback(unique function of HAL)
+ * @param
+ * @return
+ * @note	for debugging
+ */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
+	static int16_t index = 0;
+	for (int8_t i = 0; i < ADC_CURT_SENSE_BUFFER_SIZE; i++) {
+		curt_sense_data_log[i][index] = curt_sense_data[i];
+	}
+	index = (index + 1) % ADC_MOV_AVE_SIZE;
+
+//	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
+}
+
 void BLDCGetCurrentSenseOffset(void) {
-	const int32_t num_offset = 10;
+	const int32_t num_offset = 100;
 
  	curt_sense_data_offset[0] = curt_sense_data_offset[1] = curt_sense_data_offset[2] = 0;
  	for (int32_t i = 0; i < num_offset; i++) {
  		curt_sense_data_offset[0] += curt_sense_data[0];
  		curt_sense_data_offset[1] += curt_sense_data[1];
  		curt_sense_data_offset[2] += curt_sense_data[2];
- 		HAL_Delay(1);
+ 		for (volatile int32_t j = 0; j < 1000; j++) {;}		//short wait
  	}
  	curt_sense_data_offset[0] = (int)(curt_sense_data_offset[0] / num_offset + 0.50f);	//ROUND(curt_sense_data_offset / num_offset)
  	curt_sense_data_offset[1] = (int)(curt_sense_data_offset[1] / num_offset + 0.50f);
@@ -114,18 +143,6 @@ void BLDCGetCurrentSenseOffset(void) {
 void BLDCStartCurrentSense(void) {
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t *)curt_sense_data, ADC_CURT_SENSE_BUFFER_SIZE);
 }
-
-/*
- * ADC Conversion Complete Callback(unique function of HAL)
- * @param
- * @return
- * @note	for debugging
- */
-/*
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
-}
-*/
 
 /*
  * Enable BLDC Motor(Enable Gate Driver & Start TIM8 PWM Generation)
