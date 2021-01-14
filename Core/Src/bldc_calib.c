@@ -11,7 +11,7 @@
 #include <math.h>
 
 void BLDCCalibZeroPos(void) {
-	int8_t n_loop = 12;
+	int8_t n_loop = 12;		//pole number
 	uint16_t angle_data;
 	float elec_angle_deg;
 

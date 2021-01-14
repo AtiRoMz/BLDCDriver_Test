@@ -14,13 +14,13 @@ int32_t idx = 0;
 float g_curt[1000][6];
 
 //private define
-#define ADC_CURT_SENSE_BUFFER_SIZE	((uint32_t)3)
-#define ADC_MOV_AVE_SIZE			5
+#define ADC_CURT_SENSE_BUFFER_SIZE	((uint32_t)2)
+#define ADC_MOV_AVE_SIZE			2
 
 //static variables
 static uint16_t curt_sense_data[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 static uint16_t curt_sense_data_log[ADC_CURT_SENSE_BUFFER_SIZE][ADC_MOV_AVE_SIZE] = {};
-static uint32_t curt_sense_data_ave[ADC_CURT_SENSE_BUFFER_SIZE] = {};
+static float curt_sense_data_ave[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 static uint32_t curt_sense_data_offset[ADC_CURT_SENSE_BUFFER_SIZE] = {};
 
 void BLDCVqConstControl(float vol_d, float vol_q) {
@@ -51,14 +51,9 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	}
 
 	//current control
-	curt_u = ((int)curt_sense_data_ave[0] - (int)curt_sense_data_offset[0]) * 3.3f / 4096.0f * 25.0f;	//TODO:use amplifier gain
-	curt_v = ((int)curt_sense_data_ave[1] - (int)curt_sense_data_offset[1]) * 3.3f / 4096.0f * 25.0f;
-	curt_w = ((int)curt_sense_data_ave[2] - (int)curt_sense_data_offset[2]) * 3.3f / 4096.0f * 25.0f;
-	/*
-	if 		(vol_u >= vol_v && vol_u >= vol_w) {curt_u = -curt_v - curt_w;}
-	else if (vol_v >= vol_w && vol_v >= vol_u) {curt_v = -curt_w - curt_u;}
-	else if (vol_w >= vol_u && vol_w >= vol_v) {curt_w = -curt_u - curt_v;}
-	*/
+	curt_v = (curt_sense_data_ave[0] * 3.3f / 4096.0f - 1.65f) * 22.2121212f;
+	curt_w = (curt_sense_data_ave[1] * 3.3f / 4096.0f - 1.65f) * 22.2121212f;
+	curt_u = -curt_v - curt_w;
 
 	//current UVW -> alpha,beta
 	curt_alpha = 0.8169496580928f * (curt_u - 0.5 * (curt_v + curt_w));
@@ -82,7 +77,7 @@ void BLDCVqConstControl(float vol_d, float vol_q) {
 	if (5000 <= idx && idx < 6000) {
 		g_curt[idx - 5000][0] = vol_u;
 		g_curt[idx - 5000][1] = vol_v;
-		g_curt[idx - 5000][2] = vol_w;
+		g_curt[idx - 5000][2] = theta;
 		g_curt[idx - 5000][3] = curt_u;
 		g_curt[idx - 5000][4] = curt_v;
 		g_curt[idx - 5000][5] = curt_w;
@@ -114,23 +109,21 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
 	}
 	index = (index + 1) % ADC_MOV_AVE_SIZE;
 
-//	printf("%d %d %d\n", curt_sense_data[0], curt_sense_data[1], curt_sense_data[2]);
+//	printf("%d %d\n", curt_sense_data[0], curt_sense_data[1]);
 }
 
 void BLDCGetCurrentSenseOffset(void) {
 	const int32_t num_offset = 100;
 
- 	curt_sense_data_offset[0] = curt_sense_data_offset[1] = curt_sense_data_offset[2] = 0;
+ 	curt_sense_data_offset[0] = curt_sense_data_offset[1] = 0;
  	for (int32_t i = 0; i < num_offset; i++) {
  		curt_sense_data_offset[0] += curt_sense_data[0];
  		curt_sense_data_offset[1] += curt_sense_data[1];
- 		curt_sense_data_offset[2] += curt_sense_data[2];
  		for (volatile int32_t j = 0; j < 1000; j++) {;}		//short wait
  	}
  	curt_sense_data_offset[0] = (int)(curt_sense_data_offset[0] / num_offset + 0.50f);	//ROUND(curt_sense_data_offset / num_offset)
  	curt_sense_data_offset[1] = (int)(curt_sense_data_offset[1] / num_offset + 0.50f);
- 	curt_sense_data_offset[2] = (int)(curt_sense_data_offset[2] / num_offset + 0.50f);
- 	printf("%d %d %d\n", (int)curt_sense_data_offset[0], (int)curt_sense_data_offset[1], (int)curt_sense_data_offset[2]);
+ 	printf("%d %d\n", (int)curt_sense_data_offset[0], (int)curt_sense_data_offset[1]);
 }
 
 /*
@@ -154,11 +147,9 @@ void BLDCEnable(void) {
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 0);
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 0);
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 0);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, __HAL_TIM_GET_AUTORELOAD(&htim8) - 1);
 	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
-	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
 }
 
 /*
@@ -171,9 +162,7 @@ void BLDCDisable(void) {
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 0);
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 0);
 	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 0);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, __HAL_TIM_GET_AUTORELOAD(&htim8) - 1);
 	HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_3);
-	HAL_TIM_PWM_Stop(&htim8, TIM_CHANNEL_4);
 }

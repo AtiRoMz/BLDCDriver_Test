@@ -76,7 +76,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM6) {
 		static int32_t t = 0;
 
-		BLDCVqConstControl(0, 3.0f);
+		BLDCVqConstControl(0, 5.0f);
 
 		/*
 		//sensored 120 deg conduction
@@ -190,9 +190,6 @@ int main(void)
   //start timer interrupt
   HAL_TIM_Base_Start_IT(&htim6);
 
-//  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
-//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-//  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -209,9 +206,6 @@ int main(void)
 		  }
 		  idx = 6001;
 	  }
-	  //LED
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
-	  HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
